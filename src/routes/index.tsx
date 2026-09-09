@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowRight, Check, ChevronDown, Clock3, Globe2, Menu, Search, Sparkles, X } from "lucide-react";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
+
+const ParticleGlobe = lazy(() => import("@/components/ParticleGlobe"));
 
 import { Button } from "@/components/ui/button";
 
@@ -90,7 +92,21 @@ function PlatformDemo() {
 function Index() {
   return <main>
     <Header />
-    <section className="hero"><LivingNetwork /><div className="hero-content"><Eyebrow>AI + human intelligence</Eyebrow><h1>Build pre-vetted global talent in days—on one AI platform.</h1><p className="hero-lede">Hyqoo helps enterprises build high-performing global teams fast, pairing a powerful platform with real human judgment and a dedicated partner.</p><p className="hero-body">Tell us the role. Our AI searches 14M+ professionals, our Talent Evangelists confirm the fit, and you review interview-ready experts in as little as 72 hours.</p><div className="hero-actions"><Button size="lg" className="gold-button">Hire talent <ArrowRight /></Button><Button size="lg" variant="outline" className="outline-button">Explore the platform</Button></div><p className="micro">Backed by Collabera’s 25 years and Fortune 500 relationships.</p></div><div className="scroll-cue">SCROLL TO EXPLORE <span /></div></section>
+    <section className="hero hero-centered">
+      <Suspense fallback={null}><ParticleGlobe /></Suspense>
+      <div className="hero-content hero-content-centered">
+        <Eyebrow>AI + human intelligence</Eyebrow>
+        <h1>Build pre-vetted global talent in days—on one AI platform.</h1>
+        <p className="hero-lede">Hyqoo helps enterprises build high-performing global teams fast, pairing a powerful platform with real human judgment and a dedicated partner.</p>
+        <p className="hero-body">Tell us the role. Our AI searches 14M+ professionals, our Talent Evangelists confirm the fit, and you review interview-ready experts in as little as 72 hours.</p>
+        <div className="hero-actions">
+          <Button size="lg" className="gold-button">Hire talent <ArrowRight /></Button>
+          <Button size="lg" variant="outline" className="outline-button">Explore the platform</Button>
+        </div>
+        <p className="micro">Backed by Collabera's 25 years and Fortune 500 relationships.</p>
+      </div>
+      <div className="scroll-cue">SCROLL TO EXPLORE <span /></div>
+    </section>
 
     <section className="trust band"><p>Trusted by the enterprises you’re building to join.</p><div className="logo-mask"><div className="logo-rail">{[...clients,...clients].map((client,i)=><span key={`${client}-${i}`}>{client}</span>)}</div></div><small>Working with organisations across the Fortune 500 and Global 1000, through Collabera’s relationships.</small></section>
 
