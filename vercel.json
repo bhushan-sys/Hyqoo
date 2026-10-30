@@ -1,5 +1,6 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/Hyqoo_Orbit_v3_pages-3-api 1.html" }
+    { "source": "/api.php", "destination": "/api/proxy" },
+    { "source": "/talent-profiles.php", "destination": "/api/proxy" }
   ]
 }

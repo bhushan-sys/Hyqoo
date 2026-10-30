@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>API Data</title>
+</head>
+<body>
+    <h2>API Response</h2>
+
+    <button id="loadBtn" onclick="loadData()">
+        Load Talent Profiles
+    </button>
+
+    <p id="status"></p>
+    <pre id="result">Click Load Data</pre>
+
+    <script>
+        async function loadData() {
+            const result = document.getElementById("result");
+            const status = document.getElementById("status");
+            const button = document.getElementById("loadBtn");
+
+            button.disabled = true;
+            status.textContent = "Loading...";
+            result.textContent = "";
+
+            try {
+                const response = await fetch(
+                    "api.php?endpoint=talent_profiles",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Accept": "application/json"
+                        },
+                        cache: "no-store"
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.error || "HTTP error: " + response.status
+                    );
+                }
+
+                result.textContent = JSON.stringify(data, null, 2);
+                status.textContent = "Data loaded successfully.";
+
+            } catch (error) {
+                status.textContent = "Unable to load data.";
+                result.textContent = error.message;
+            } finally {
+                button.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

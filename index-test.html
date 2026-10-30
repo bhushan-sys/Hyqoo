@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Talent Profiles</title>
+</head>
+<body>
+    <h2>Talent Profiles</h2>
+    <p id="status">Loading...</p>
+    <pre id="result"></pre>
+
+    <script>
+        async function loadData() {
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+
+            try {
+                const response = await fetch('talent-profiles.php');
+
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+
+                const data = await response.json();
+
+                result.textContent = JSON.stringify(data, null, 2);
+                status.textContent = 'Data loaded successfully.';
+            } catch (error) {
+                status.textContent = 'Unable to load talent profiles.';
+                result.textContent = error.message;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>
