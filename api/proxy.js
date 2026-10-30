@@ -1,4 +1,6 @@
-export default async function handler(req, res) {
+import https from "node:https";
+
+export default function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
@@ -15,28 +17,48 @@ export default async function handler(req, res) {
     } catch (_) {}
   }
 
-  const baseUrl = "https://cmsapi.hyqoo.com/api/v1/hq";
-  const token = "hq_qzPf5v57fbQRxT4LVQ6a355z9rmMnCdL";
-
-  let path = "/public/talent/profiles";
+  let subpath = "/public/talent/profiles";
   if (endpoint && endpoint !== "talent_profiles") {
-    path = `/public/${endpoint}`;
+    subpath = `/public/${endpoint}`;
   }
 
-  try {
-    const upstream = await fetch(`${baseUrl}${path}`, {
-      headers: {
-        "Token": token,
-        "Accept": "application/json",
-        "User-Agent": "Mozilla/5.0"
-      }
+  const options = {
+    hostname: "cmsapi.hyqoo.com",
+    port: 443,
+    path: `/api/v1/hq${subpath}`,
+    method: "GET",
+    rejectUnauthorized: false,
+    headers: {
+      "Token": "hq_qzPf5v57fbQRxT4LVQ6a355z9rmMnCdL",
+      "Accept": "application/json",
+      "User-Agent": "Mozilla/5.0"
+    }
+  };
+
+  const upstreamReq = https.request(options, (upstreamRes) => {
+    let data = "";
+    upstreamRes.on("data", (chunk) => {
+      data += chunk;
     });
 
-    const data = await upstream.json();
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
-    res.setHeader("Cache-Control", "no-store");
-    res.status(upstream.status).json(data);
-  } catch (error) {
-    res.status(502).json({ error: "Failed to connect to upstream API", details: error.message });
-  }
+    upstreamRes.on("end", () => {
+      res.setHeader("Content-Type", "application/json; charset=utf-8");
+      res.setHeader("Cache-Control", "no-store");
+      res.status(upstreamRes.statusCode || 200).send(data);
+    });
+  });
+
+  upstreamReq.on("error", (error) => {
+    res.status(502).json({
+      error: "Failed to connect to upstream API",
+      details: error.message
+    });
+  });
+
+  upstreamReq.setTimeout(15000, () => {
+    upstreamReq.destroy();
+    res.status(504).json({ error: "Upstream API timeout" });
+  });
+
+  upstreamReq.end();
 }
