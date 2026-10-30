@@ -28,8 +28,8 @@ class HyqooHandler(http.server.SimpleHTTPRequestHandler):
         path = parsed.path
         query = urllib.parse.parse_qs(parsed.query)
 
-        # Handle api.php endpoint
-        if path == "/api.php":
+        # Handle api.php and /api/proxy endpoint
+        if path in ("/api.php", "/api/proxy"):
             endpoint = query.get("endpoint", [""])[0]
             if endpoint == "talent_profiles":
                 self.proxy_cms("/public/talent/profiles")

@@ -17,7 +17,14 @@
             const result = document.getElementById('result');
 
             try {
-                const response = await fetch('talent-profiles.php');
+                let response = await fetch('/api/proxy?endpoint=talent_profiles', {
+                    headers: { 'Accept': 'application/json' },
+                    cache: 'no-store'
+                });
+
+                if (!response.ok) {
+                    response = await fetch('talent-profiles.php');
+                }
 
                 if (!response.ok) {
                     throw new Error('HTTP ' + response.status);

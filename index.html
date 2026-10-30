@@ -26,16 +26,23 @@
             result.textContent = "";
 
             try {
-                const response = await fetch(
-                    "api.php?endpoint=talent_profiles",
-                    {
+                let response = await fetch("/api/proxy?endpoint=talent_profiles", {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    },
+                    cache: "no-store"
+                });
+
+                if (!response.ok) {
+                    response = await fetch("api.php?endpoint=talent_profiles", {
                         method: "GET",
                         headers: {
                             "Accept": "application/json"
                         },
                         cache: "no-store"
-                    }
-                );
+                    });
+                }
 
                 const data = await response.json();
 
