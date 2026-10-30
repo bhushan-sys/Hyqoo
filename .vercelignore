@@ -1,3 +1,5 @@
 _secret/
 *.php
 server.py
+server.ps1
+start.bat
