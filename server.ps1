@@ -3,7 +3,6 @@
   Runs using built-in Windows PowerShell (no Python, Node, or PHP required)
 #>
 
-$port = 8000
 $root = $PSScriptRoot
 if (-not $root) { $root = Get-Location }
 
@@ -14,15 +13,28 @@ if (-not $root) { $root = Get-Location }
 $cmsToken = "hq_qzPf5v57fbQRxT4LVQ6a355z9rmMnCdL"
 $cmsBase = "https://cmsapi.hyqoo.com/api/v1/hq"
 
-$listener = New-Object System.Net.HttpListener
-$prefix = "http://localhost:$port/"
-$listener.Prefixes.Add($prefix)
+# Automatically find an available port
+$candidatePorts = @(8000, 8001, 8002, 8080, 8888, 3000, 5000)
+$listener = $null
+$port = $null
 
-try {
-    $listener.Start()
-} catch {
-    Write-Host "Failed to bind to $prefix. Port might already be in use." -ForegroundColor Red
-    Write-Host $_.Exception.Message
+foreach ($p in $candidatePorts) {
+    try {
+        $candidate = New-Object System.Net.HttpListener
+        $candidate.Prefixes.Add("http://localhost:$p/")
+        $candidate.Start()
+        $listener = $candidate
+        $port = $p
+        break
+    } catch {
+        if ($candidate) {
+            try { $candidate.Close() } catch {}
+        }
+    }
+}
+
+if (-not $listener) {
+    Write-Host "Failed to find an open port. Please close conflicting apps and try again." -ForegroundColor Red
     Read-Host "Press Enter to exit"
     exit 1
 }
